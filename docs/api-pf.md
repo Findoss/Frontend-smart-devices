@@ -22,7 +22,6 @@
 ```
 {
   "event":"feedUpdated"
-  "data":"feedUpdated"
 }
 ```
 
