@@ -1,10 +1,12 @@
 {
-  "name": "Frontend-automatic-watering",
+  "name": "Frontend-smart-devices",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
+    "mock-api-aw": "node test/aw.js 3001",
+    "mock-api-pf": "node test/pf.js 3002",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
@@ -30,7 +32,8 @@
     "eslint-plugin-vue": "^5.0.0",
     "vue-cli-plugin-i18n": "^0.5.2",
     "vue-cli-plugin-vuetify": "^0.4.6",
-    "vue-template-compiler": "^2.5.21"
+    "vue-template-compiler": "^2.5.21",
+    "websocket": "^1.0.28"
   },
   "eslintConfig": {
     "root": true,

@@ -1,12 +1,13 @@
 import Vue from 'vue';
-import './plugins/vuetify';
 import App from './App.vue';
 import router from './router';
 import store from './store';
+import i18n from './i18n';
+
+import './plugins/vuetify';
 import './registerServiceWorker';
 import 'roboto-fontface/css/roboto/roboto-fontface.css';
 import 'material-design-icons-iconfont/dist/material-design-icons.css';
-import i18n from './i18n';
 
 Vue.config.productionTip = false;
 

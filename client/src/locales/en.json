@@ -1,0 +1,13 @@
+{
+  "smart": "smart",
+  "devices": "devices",
+  "fake-device": "FAKE DEVICE",
+  "message": "Connect to device",
+  "password": "password",
+  "connect": "connect",
+  "settings": "Settings",
+  "notes": "Notes",
+  "createNewConnection": "Create a new connection",
+  "port": "port",
+  "ip": "IP Adress"
+}
