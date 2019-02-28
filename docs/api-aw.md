@@ -107,6 +107,7 @@
   sensorAnalysis: Boolean,    // анализ датчиков
   wateringMode: Boolean,      // частота полива час/день
   microcontroller: String,    // название системы (вдруг их несколько)
+  type: String,               // тип устройства (полив - 'aw')
   humidity: Number,           // настройка влажности почвы
 }
 
