@@ -1,0 +1,15 @@
+{
+  "name": "test-smart-devices",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "cd client && npm run serve",
+    "build": "cd client && npm run build",
+    "aw": "node servers/aw.js",
+    "pf": "node servers/pf.js"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "websocket": "^1.0.28"
+  }
+}
