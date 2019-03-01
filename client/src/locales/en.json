@@ -1,0 +1,39 @@
+{
+  "000": "yeah!",
+  "smart": "smart",
+  "devices": "devices",
+  "close": "close",
+  "null": "",
+  "connect": "connect",
+  "password": "Password",
+  "settings": "Settings",
+  "help": "Help",
+  "loading": "loading...",
+  "createNewConnection": "Create a new connection",
+  "connectionSettings": "Connection settings",
+  "port": "port",
+  "pf": {
+    "maxFeedingCount": "Maximum feeding count",
+    "doublePortion": "Double portion",
+    "lastFeedingTime": "Last feeding",
+    "feedingInterval": "Feeding interval",
+    "x2Portion": "x2 portion",
+    "noFeed": "No feed! Need to replenish stock.",
+    "soonNoFeed": "Soon there is no feed.",
+    "left": "until next time left:",
+    "startFeeding": "Start feeding",
+    "feedUpdated": "Feed updated",
+    "feeding": "Feeding, pet satisfied!",
+    "feedingCount": "Feeding count"
+  },
+  "error": {
+    "devicesLimit": "Devices limit",
+    "IpRequired": "IP adress required",
+    "IpInvalid": "IP adress invalid ",
+    "portRequired": "Port required",
+    "connect": "connect",
+    "disconnect": "disconnect",
+    "portInvalid": "Port invalid"
+  },
+  "ip": "IP Adress"
+}
