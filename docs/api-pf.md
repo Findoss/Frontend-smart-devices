@@ -33,11 +33,12 @@
 }
 ```
 
-3. Время для таймера
+3. Время для таймера (через какое время кормить) в часах от 1 до 11
 
 ```
 {
-  "event":"timeForTimer"
+  "event":"feedingInterval",
+  "data": Number
 }
 ```
 
@@ -48,6 +49,8 @@
 ```
 {
   microcontroller: String,    // название системы (вдруг их несколько)
+  doublePortion: Boolean,     // использовать двойную порцию для кормления
+  feedingInterval: Number,   // частота кормления
   feedingCount: Number,       // количество произведенных кормлений
   maxFeedingCount: Number,    // максимальное кол-во порций
   lastFeedingTime: Number     // время последнего кормления
