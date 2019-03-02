@@ -29,7 +29,8 @@
 
 ```
 {
-  "event":"doublePortion"
+  "event":"doublePortion",
+  "data": Boolean
 }
 ```
 
@@ -50,7 +51,7 @@
 {
   microcontroller: String,    // название системы (вдруг их несколько)
   doublePortion: Boolean,     // использовать двойную порцию для кормления
-  feedingInterval: Number,   // частота кормления
+  feedingInterval: Number,    // частота кормления
   feedingCount: Number,       // количество произведенных кормлений
   maxFeedingCount: Number,    // максимальное кол-во порций
   lastFeedingTime: Number     // время последнего кормления
