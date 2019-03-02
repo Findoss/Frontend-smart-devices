@@ -8,7 +8,7 @@ const initData = {
   maxFeedingCount: 10,
   doublePortion: false,
   feedingInterval: 3,
-  lastFeedingTime: 1526000000000,
+  lastFeedingTime: (() => Date.now() - 1000000)(),
   type: "pf",
   microcontroller: `Pet feeder 
   ${Math.floor(Math.random() * (10 - 1) + 1)}`

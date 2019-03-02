@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import store from '@/store/index';
+import store from './store/index';
 
 import Help from './views/help.vue';
 
@@ -15,7 +15,12 @@ const router = new Router({
   routes: [
     {
       path: '/',
+      name: 'root',
+    },
+    {
+      path: '/help',
       name: 'help',
+      meta: { isNotEmpty: true },
       component: Help,
     },
     {
@@ -46,7 +51,7 @@ router.beforeEach((to, from, next) => {
   const isDevices = !!devices.length;
 
   if (isNotEmpty && !isDevices) {
-    next({ name: 'help' });
+    next({ name: 'root' });
   }
 
   next();

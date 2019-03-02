@@ -10,7 +10,7 @@ const initData = {
       array.push(Math.floor(Math.random() * (100 - 50) + 50));
     return array;
   })(),
-  dateWatering: 1526000000000,
+  dateWatering: (() => Date.now() - 1000000)(),
   autotesting: false,
   wateringMode: true,
   sensorAnalysis: false,
