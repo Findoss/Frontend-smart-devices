@@ -1,4 +1,4 @@
-# Frontend-automatic-watering
+# Frontend-smart-devices
 
 * Vue
 * Vuex
