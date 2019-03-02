@@ -8,23 +8,23 @@
   "password": "Password",
   "settings": "Settings",
   "help": "Help",
-  "loading": "loading...",
   "createNewConnection": "Create a new connection",
   "connectionSettings": "Connection settings",
   "port": "port",
   "pf": {
     "maxFeedingCount": "Maximum feeding count",
     "doublePortion": "Double portion",
-    "lastFeedingTime": "Last feeding",
+    "lastFeedingTime": "last feeding",
     "feedingInterval": "Feeding interval",
     "x2Portion": "x2 portion",
     "noFeed": "No feed! Need to replenish stock.",
     "soonNoFeed": "Soon there is no feed.",
-    "left": "until next time left:",
+    "left": "Until next time left:",
     "startFeeding": "Start feeding",
     "feedUpdated": "Feed updated",
     "feeding": "Feeding, pet satisfied!",
-    "feedingCount": "Feeding count"
+    "enoughServing": "Enough for 1 serving.",
+    "portionsFeedLeft": "Portions of feed left:"
   },
   "error": {
     "devicesLimit": "Devices limit",
