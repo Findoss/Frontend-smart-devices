@@ -2,6 +2,7 @@
   <v-navigation-drawer
     app
     fixed
+    @input="(e)=> toggle(e)"
     :value="showMenu"
     :clipped="$vuetify.breakpoint.lgAndUp"
   >
@@ -25,10 +26,9 @@
           </v-list-tile-title>
         </v-list-tile-content>
       </v-list-tile>
-      <v-divider class="my-3"></v-divider>
+      <v-divider class="my-3" />
 
       <template v-for="(device) in devices">
-
         <v-list-tile
           :key="device.id"
           :class="[device.id === activeIndexDevice ? 'blue lighten-4': '']"
@@ -54,11 +54,10 @@
             </v-icon>
           </v-btn>
         </v-list-tile>
-
       </template>
 
-      <v-divider class="my-3"></v-divider>
-      <v-list-tile @click="">
+      <v-divider class="my-3" />
+      <v-list-tile @click="goHelp">
         <v-list-tile-action>
           <v-icon>help</v-icon>
         </v-list-tile-action>
@@ -69,15 +68,15 @@
         </v-list-tile-content>
       </v-list-tile>
 
-      <v-list-tile :disabled="true">
-        <v-list-tile-action>
-          <v-icon>settings</v-icon>
-        </v-list-tile-action>
-        <v-list-tile-content>
-          <v-list-tile-title>
-            {{ $t('settings') }}
-          </v-list-tile-title>
-        </v-list-tile-content>
+      <v-divider class="my-3" />
+
+      <v-list-tile class="mt-5">
+        <v-select
+          box
+          :label="$t('language')"
+          :items="itemLanguages"
+          v-model="$i18n.locale"
+        />
       </v-list-tile>
 
     </v-list>
@@ -87,23 +86,53 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import Router from '@/router';
 
 export default {
   name: 'z-header',
 
   computed: {
-    ...mapGetters(['devices', 'showMenu', 'devicesLimit', 'activeIndexDevice']),
+    ...mapGetters([
+      'devices',
+      'showMenu',
+      'devicesLimit',
+      'activeIndexDevice',
+      'languages',
+      'language',
+    ]),
+
+    itemLanguages() {
+      return this.languages.map(l => {
+        return {
+          text: this.$t(`languages.${l}`),
+          value: l,
+        };
+      });
+    },
   },
 
   methods: {
-    ...mapActions(['toggleConnectModal', 'addAlert', 'disconnectDevice', 'selectDevice']),
+    ...mapActions([
+      'toggleConnectModal',
+      'addAlert',
+      'disconnectDevice',
+      'selectDevice',
+      'toggleMenu',
+    ]),
+
+    goHelp() {
+      Router.replace({ name: 'help' });
+    },
+
+    toggle(open) {
+      if (open !== this.showMenu) {
+        this.toggleMenu();
+      }
+    },
   },
 };
 </script>
 
 
 <style>
-.active-device {
-  background-color: black;
-}
 </style>

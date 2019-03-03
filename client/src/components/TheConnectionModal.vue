@@ -24,13 +24,14 @@
                 md8
               >
                 <v-text-field
-                  v-model="form.ip"
+                  @input="setIP"
+                  :value='ip'
                   :label="$t('ip')"
                   :autofocus="true"
                   :rules="form.ipRules"
                   required
                   box
-                ></v-text-field>
+                />
               </v-flex>
               <v-flex
                 xs12
@@ -38,12 +39,13 @@
                 md4
               >
                 <v-text-field
-                  v-model="form.port"
+                  @input="setPort"
+                  :value='port'
                   :label="$t('port')"
                   :rules="form.portRules"
                   required
                   box
-                >{{ defaultPort }}</v-text-field>
+                />
               </v-flex>
               <v-flex xs12>
                 <v-text-field
@@ -104,15 +106,10 @@ export default {
       form: {
         validForm: false,
 
-        ip: '127.0.0.1',
-        // ip: null,
         ipRules: [
           v => !!v || this.$i18n.t('error.IpRequired'),
           v => IP_REGEXP.test(v) || this.$i18n.t('error.IpInvalid'),
         ],
-
-        port: 3004,
-        // port: null,
         portRules: [
           v => !!v || this.$i18n.t('error.portRequired'),
           v => (v <= 65535 && v > 0) || this.$i18n.t('error.portInvalid'),
@@ -125,15 +122,15 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['devices', 'showConnectModal', 'defaultPort', 'isLoadDevice']),
+    ...mapGetters(['devices', 'showConnectModal', 'isLoadDevice', 'ip', 'port']),
   },
 
   methods: {
-    ...mapActions(['toggleConnectModal', 'connectDevice']),
+    ...mapActions(['toggleConnectModal', 'connectDevice', 'setIP', 'setPort']),
 
     validationForm: function() {
       if (this.$refs.form.validate()) {
-        this.connectDevice(this.form);
+        this.connectDevice(this.password);
       }
     },
 

@@ -3,7 +3,6 @@ import Vuex from 'vuex';
 import Router from '@/router';
 
 import createPersistedState from 'vuex-persistedstate';
-import { log } from 'util';
 import { DEVICES_LIMIT } from '../utils/constants';
 
 import createStoreModuleAW from '../devices/aw/store';
@@ -20,23 +19,19 @@ export default new Vuex.Store({
   state: {
     //
     activeIndexDevice: 0,
-    devices: [
-      // { icon: 'developer_board', text: 'fake-device' },
-    ],
+    devices: [],
 
-    errors: [
-      // { type: 'success', message: '000', key: '0' },
-      // { type: 'error', message: 'test 1', key: '1' },
-      // { type: 'warning', message: 'test 2', key: '2' },
-      // { type: 'info', message: 'test 3', key: '3' },
-    ],
+    errors: [],
 
-    showMenu: true,
+    showMenu: false,
     showConnectModal: false,
 
-    defaultPort: 1337,
+    ip: '127.0.0.1',
+    port: 3004,
 
     isLoadDevice: false,
+
+    languages: ['en', 'ru'],
   },
 
   mutations: {
@@ -51,6 +46,12 @@ export default new Vuex.Store({
     },
     SET_DEVICE(state, id) {
       state.activeIndexDevice = id;
+    },
+    SET_IP(state, ip) {
+      state.ip = ip;
+    },
+    SET_PORT(state, port) {
+      state.port = port;
     },
     TOGGLE_CONNECT_MODAL(state) {
       state.showConnectModal = !state.showConnectModal;
@@ -67,15 +68,30 @@ export default new Vuex.Store({
     addAlert({ commit }, alert) {
       commit('ADD_ALERT', alert);
     },
+
     toggleConnectModal({ commit }) {
       commit('TOGGLE_CONNECT_MODAL');
     },
+
+    // setURL({ dispatch }, payload) {
+    //   dispatch('setIP', payload.ip);
+    //   dispatch('setPort', payload.port);
+    // },
+
+    setIP({ commit }, payload) {
+      commit('SET_IP', payload);
+    },
+
+    setPort({ commit }, payload) {
+      commit('SET_PORT', payload);
+    },
+
     toggleMenu({ commit }) {
       commit('TOGGLE_MENU');
     },
-    connectDevice({ commit, getters }, form) {
-      const { ip, port } = form;
-      const url = `ws://${ip}:${port}`;
+
+    connectDevice({ commit, getters, state }, password) {
+      const url = `ws://${state.ip}:${state.port}`;
 
       commit('TOGGLE_LOAD_DEVICE');
 
@@ -120,17 +136,23 @@ export default new Vuex.Store({
         socket.close();
       };
     },
+
+    reconnectDevice({ commit, getters }) {},
+
     disconnectDevice({ commit, getters, dispatch }, id) {
       if (getters.devices.length === 1) {
         commit('TOGGLE_CONNECT_MODAL');
-        Router.replace({ name: 'help' });
+        Router.replace({ name: 'root' });
       } else {
         dispatch('selectDevice', getters.devices[0].id);
       }
-      // todo отключить сокет
-      this.unregisterModule(id);
-      commit('DEL_DEVICE', id);
+
+      dispatch(`${id}/close`).then(() => {
+        this.unregisterModule(id);
+        commit('DEL_DEVICE', id);
+      });
     },
+
     selectDevice({ commit, getters }, id) {
       commit('SET_DEVICE', id);
       Router.replace({ name: getters.deviceById(id).type, params: { id } });
@@ -166,19 +188,22 @@ export default new Vuex.Store({
     activeIndexDevice: state => state.activeIndexDevice,
     deviceById: state => id => state.devices.find(device => device.id === id),
     devicesLimit: state => state.devices.length === DEVICES_LIMIT,
-    defaultPort: state => state.defaultPort,
     isLoadDevice: state => state.isLoadDevice,
     showMenu: state => state.showMenu,
     showConnectModal: state => state.showConnectModal,
+    ip: state => state.ip,
+    port: state => state.port,
+    language: state => state.language,
+    languages: state => state.languages,
   },
 
   modules: {},
 
   plugins: [
-    // createPersistedState({
-    //   key: 'SD-1',
-    //   paths: ['devices', 'activeDevice'],
-    // }),
+    createPersistedState({
+      key: 'SD-1',
+      paths: ['ip', 'port'],
+    }),
   ],
 
   namespaced: true,
