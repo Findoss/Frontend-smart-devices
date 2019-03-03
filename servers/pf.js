@@ -23,15 +23,6 @@ const wsServer = new WebSocketServer({
 wsServer.on("request", request => {
   const connection = request.accept(null, request.origin);
 
-  // setInterval(() => {
-  //   console.log("← send feeding");
-  //   connection.send(
-  //     JSON.stringify({
-  //       event: "feeding"
-  //     })
-  //   );
-  // }, 5000);
-
   setTimeout(() => {
     console.log("← send init");
     connection.send(
@@ -41,6 +32,15 @@ wsServer.on("request", request => {
       })
     );
   }, 1000);
+
+  // setInterval(() => {
+  //   console.log("← send feeding");
+  //   connection.send(
+  //     JSON.stringify({
+  //       event: "feeding"
+  //     })
+  //   );
+  // }, 2000);
 
   connection.on("message", message => {
     if (message.type === "utf8") {
