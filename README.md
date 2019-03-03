@@ -16,14 +16,9 @@
 | IE9 / IE10      | Не поддерживается    |
 
 TODO
-* Разметка для интерфейсов девайсов
 * Интерфейс для поливалки
-* Проработка текста 
 * Перевод текста
 * Переподключение сокетов
-* PWA
-* ...mapA/S/G
-* корректное отключение
 
 ## Project setup
 ```
@@ -39,4 +34,9 @@ npm run serve
 ### Compiles and minifies for production
 ```
 npm run build
+```
+
+### Test servers
+```
+npm run aw/pf (port)
 ```
