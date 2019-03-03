@@ -1,3 +1,5 @@
+import { DateTime, Interval } from 'luxon';
+
 export default initData => ({
   state() {
     return {
@@ -8,10 +10,22 @@ export default initData => ({
       lastFeedingTime: initData.lastFeedingTime,
       feedingInterval: initData.feedingInterval,
       socket: initData.socket,
+      nextFeedingTime: '',
+      idTimerNextFeeding: null,
     };
   },
 
   mutations: {
+    SET_NEXT_FEEDING_TIME(state, payload) {
+      state.nextFeedingTime = payload;
+    },
+    SET_TIMER(state, payload) {
+      state.idTimerNextFeeding = payload;
+    },
+    DEL_TIMER(state) {
+      clearInterval(state.idTimerNextFeeding);
+      state.idTimerNextFeeding = null;
+    },
     INC_FEEDING_COUNT(state) {
       state.feedingCount += 1;
     },
@@ -73,8 +87,26 @@ export default initData => ({
       commit('TOGGLE_DOUBLE_PORTION');
     },
 
+    startTimerNextFeeding({ commit, state }) {
+      const id = setInterval(() => {
+        const now = DateTime.local();
+        const later = DateTime.fromMillis(state.lastFeedingTime).plus({
+          hours: state.feedingInterval,
+        });
+
+        const i = Interval.fromDateTimes(now, later)
+          .toDuration(['hours', 'minutes', 'seconds'])
+          .toObject();
+
+        const timeFormat = `${i.hours}:${Math.round(i.minutes)}:${Math.round(i.seconds)}`;
+
+        commit('SET_NEXT_FEEDING_TIME', timeFormat);
+      }, 1000);
+      commit('SET_TIMER', id);
+    },
+
     /** */
-    event({ dispatch }, payload) {
+    connectionEvent({ dispatch }, payload) {
       dispatch(`socket_${payload.event}`, payload.data);
     },
 
@@ -83,12 +115,22 @@ export default initData => ({
       state.socket.send(message);
     },
 
-    connectionError({ commit }) {
+    connectionError({ commit, state }) {
       commit('ADD_ALERT', { type: 'error', message: 'error.disconnect' }, { root: true });
+      state.socket.close();
+    },
+
+    close({ commit, state }) {
+      commit('DEL_TIMER');
+      state.socket.close();
     },
   },
 
-  getters: {},
+  getters: {
+    lastFeedingTime(state) {
+      return DateTime.fromMillis(state.lastFeedingTime).toLocaleString(DateTime.DATETIME_MED);
+    },
+  },
 
   namespaced: true,
 });

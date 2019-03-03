@@ -16,7 +16,7 @@
           </v-card-title>
           <v-card-text>
             <span class="xxl-text">
-              {{ displayNextFeedingTime }}
+              {{ stateLocal.nextFeedingTime }}
             </span>
             <br>
             {{ $t('pf.lastFeedingTime') }} {{ lastFeedingTime }}
@@ -34,7 +34,7 @@
             <h3 class="headline mb-0">{{ $t('pf.portionsFeedLeft') }}</h3>
           </v-card-title>
           <v-card-text class="xxl-text">
-            {{ data.maxFeedingCount - data.feedingCount }}
+            {{ stateLocal.maxFeedingCount - stateLocal.feedingCount }}
           </v-card-text>
         </v-card>
       </v-flex>
@@ -84,7 +84,7 @@
           </v-card-title>
           <v-card-text>
             <v-switch
-              :value="data.doublePortion"
+              :value="stateLocal.doublePortion"
               :label="$t('pf.x2Portion')"
               @change="doublePortion"
               color="success"
@@ -104,7 +104,7 @@
             max="11:59"
             width="350"
             @input="newFeedingInterval"
-            :value="`${data.feedingInterval}:00`"
+            :value="`${stateLocal.feedingInterval}:00`"
             :allowed-minutes="v => 0"
           />
         </v-card>
@@ -117,7 +117,6 @@
 
 <script>
 import { mapActions } from 'vuex';
-import { DateTime, Interval } from 'luxon';
 
 export default {
   computed: {
@@ -126,25 +125,15 @@ export default {
     },
 
     lastFeedingTime() {
-      return DateTime.fromMillis(this.data.lastFeedingTime).toLocaleString(DateTime.DATETIME_MED);
+      return this.$store.getters[`${this.$store.getters['activeIndexDevice']}/lastFeedingTime`];
     },
 
-    data() {
+    stateLocal() {
       return this.$store.state[this.$store.getters['activeIndexDevice']];
     },
   },
 
-  data: () => {
-    return {
-      timePicker: 1,
-      displayNextFeedingTime: '',
-    };
-  },
-
   methods: {
-    event: function(payload) {
-      this.$store.dispatch(`${this.$store.getters['activeIndexDevice']}/event`, payload);
-    },
     newFeedingInterval: function(payload) {
       this.$store.dispatch(
         `${this.$store.getters['activeIndexDevice']}/newFeedingInterval`,
@@ -160,47 +149,27 @@ export default {
     feedUpdated: function() {
       this.$store.dispatch(`${this.$store.getters['activeIndexDevice']}/feedUpdated`);
     },
-
-    nextFeedingTime: function() {
-      return () => {
-        setInterval(() => {
-          const now = DateTime.local();
-          const later = DateTime.fromMillis(this.data.lastFeedingTime).plus({
-            hours: this.data.feedingInterval,
-          });
-
-          console.log(this.data.feedingInterval);
-
-          const i = Interval.fromDateTimes(now, later)
-            .toDuration(['hours', 'minutes', 'seconds'])
-            .toObject();
-
-          this.displayNextFeedingTime = `${i.hours}:${Math.round(i.minutes)}:${Math.round(
-            i.seconds
-          )}`;
-        }, 1000);
-      };
+    startTimerNextFeeding: function() {
+      this.$store.dispatch(`${this.$store.getters['activeIndexDevice']}/startTimerNextFeeding`);
     },
   },
 
   created() {
-    const { socket } = this.data;
+    const { socket } = this.stateLocal;
 
-    this.nextFeedingTime()();
+    console.log(socket);
+
+    this.startTimerNextFeeding();
 
     socket.onmessage = data => {
       const payload = JSON.parse(data.data);
-      this.event(payload);
+      this.$store.dispatch(`${this.$store.getters['activeIndexDevice']}/connectionEvent`, payload);
     };
 
     socket.onerror = () => {
-      this.$store.dispatch(`${this.$store.getters['activeIndexDevice']}/connectionError`);
-      // socket.close();
-    };
-
-    socket.onclose = () => {
-      this.$store.dispatch(`${this.$store.getters['activeIndexDevice']}/connectionError`);
-      // socket.close();
+      if (this.$store.getters['activeIndexDevice']) {
+        this.$store.dispatch(`${this.$store.getters['activeIndexDevice']}/connectionError`);
+      }
     };
   },
 };
