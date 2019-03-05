@@ -1,17 +1,13 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import Router from '@/router';
-
 import createPersistedState from 'vuex-persistedstate';
+import Router from '../router';
+
 import { DEVICES_LIMIT } from '../utils/constants';
 
 import createStoreModuleAW from '../devices/aw/store';
 import createStoreModulePF from '../devices/pf/store';
 import genId from '../utils/genId';
-
-// import RegisterStoreModule from '@/mixins/RegisterStoreModule';
-// import automaticWateringModule from '@/devices/aw/store';
-// import petFeederModule from '@/devices/pf/store';
 
 Vue.use(Vuex);
 
@@ -21,7 +17,7 @@ export default new Vuex.Store({
     activeIndexDevice: 0,
     devices: [],
 
-    errors: [],
+    alerts: [],
 
     showMenu: true,
     showConnectModal: false,
@@ -37,7 +33,7 @@ export default new Vuex.Store({
 
   mutations: {
     ADD_ALERT(state, alert) {
-      state.errors.push({ ...alert, key: genId() });
+      state.alerts.push({ ...alert, key: genId() });
     },
     ADD_DEVICE(state, payload) {
       state.devices.push(payload);
@@ -93,28 +89,24 @@ export default new Vuex.Store({
       commit('TOGGLE_MENU');
     },
 
-    connectDevice({ commit, getters, state }, password) {
+    connectDevice({
+ commit, getters, state, dispatch 
+}) {
       const url = `ws://${state.ip}:${state.port}`;
 
       commit('TOGGLE_LOAD_DEVICE');
 
+      const id = genId();
       const socket = new WebSocket(url);
 
       socket.onmessage = (data) => {
         const message = JSON.parse(data.data);
         if (message.event === 'init') {
           //
-          const id = genId();
           const { type, microcontroller } = message.data;
           const initData = { socket, ...message.data };
 
-          let storeModule = {};
-
-          if (type === 'aw') storeModule = createStoreModuleAW(initData);
-          else if (type === 'pf') storeModule = createStoreModulePF(initData);
-          // else if (type === 'pf') storeModule = createStoreModulePF(socket);
-
-          this.registerModule(id, storeModule);
+          dispatch('createDeviceModule', { type, id, initData });
 
           commit('ADD_DEVICE', {
             id,
@@ -131,36 +123,76 @@ export default new Vuex.Store({
           if (getters.devicesLimit) {
             commit('ADD_ALERT', { type: 'warning', message: 'error.devicesLimit' });
           }
+        } else {
+          dispatch(`${id}/connectionEvent`, message);
         }
       };
 
       socket.onerror = () => {
-        commit('ADD_ALERT', { type: 'warning', message: 'error.connect' });
+        commit('ADD_ALERT', {
+          type: 'warning',
+          message: 'error.connect',
+        });
         commit('TOGGLE_LOAD_DEVICE');
-        // socket.close();
+        dispatch(`${id}/connectionError`);
       };
     },
 
-    reconnectDevice({ commit, getters }) {
-      /**
-       * смотрим наличие девайсов
-       * создаем модули на основе девайсов
-       *
-       */
+    createDeviceModule({}, { type, id, initData }) {
+      let storeModule = {};
+      if (type === 'aw') storeModule = createStoreModuleAW(initData);
+      else if (type === 'pf') storeModule = createStoreModulePF(initData);
+      // else if (type === 'pf') storeModule = createStoreModulePF(socket);
+      this.registerModule(id, storeModule);
     },
 
-    disconnectDevice({ commit, getters, dispatch }, id) {
-      if (getters.devices.length === 1) {
+    reconnectDevices({ state, commit, dispatch }) {
+      if (state.devices.length) {
+        state.devices.forEach((device) => {
+          const socket = new WebSocket(device.url);
+
+          socket.onmessage = (data) => {
+            const message = JSON.parse(data.data);
+            if (message.event === 'init') {
+              const initData = { socket, ...message.data };
+
+              dispatch('createDeviceModule', {
+                id: device.id,
+                type: device.type,
+                initData,
+              });
+
+              Router.replace({ name: device.type, params: { id: state.activeIndexDevice } });
+            } else {
+              dispatch(`${device.id}/connectionEvent`, message);
+            }
+          };
+
+          socket.onerror = () => {
+            commit('ADD_ALERT', {
+              type: 'warning',
+              message: 'error.connect',
+              device: device.microcontroller,
+            });
+            dispatch(`${device.id}/connectionError`);
+          };
+        });
+      }
+    },
+
+    disconnectDevice({ state, commit, dispatch }, id) {
+      if (state.devices.length === 1) {
         commit('TOGGLE_CONNECT_MODAL');
         Router.replace({ name: 'root' });
       } else {
-        dispatch('selectDevice', getters.devices[0].id);
+        dispatch('selectDevice', state.devices[0].id);
       }
 
       dispatch(`${id}/close`).then(() => {
         this.unregisterModule(id);
-        commit('DEL_DEVICE', id);
       });
+
+      commit('DEL_DEVICE', id);
     },
 
     selectDevice({ commit, getters }, id) {
@@ -175,7 +207,6 @@ export default new Vuex.Store({
         return getters.deviceById(getters.activeIndexDevice).title;
       }
     },
-    errors: state => state.errors,
     devices: (state) => {
       const devices = state.devices.map((device) => {
         let icon = '';
@@ -195,16 +226,17 @@ export default new Vuex.Store({
       });
       return devices;
     },
-    activeIndexDevice: state => state.activeIndexDevice,
-    deviceById: state => id => state.devices.find(device => device.id === id),
-    devicesLimit: state => state.devices.length === DEVICES_LIMIT,
-    isLoadDevice: state => state.isLoadDevice,
-    showMenu: state => state.showMenu,
-    showConnectModal: state => state.showConnectModal,
     ip: state => state.ip,
     port: state => state.port,
     local: state => state.local,
+    alerts: state => state.alerts,
+    showMenu: state => state.showMenu,
     languages: state => state.languages,
+    isLoadDevice: state => state.isLoadDevice,
+    showConnectModal: state => state.showConnectModal,
+    activeIndexDevice: state => state.activeIndexDevice,
+    devicesLimit: state => state.devices.length === DEVICES_LIMIT,
+    deviceById: state => id => state.devices.find(device => device.id === id),
   },
 
   modules: {},
@@ -212,7 +244,7 @@ export default new Vuex.Store({
   plugins: [
     createPersistedState({
       key: 'SD-1',
-      paths: ['ip', 'port', 'local'],
+      paths: ['ip', 'port', 'local', 'activeIndexDevice', 'devices', 'showMenu'],
     }),
   ],
 
