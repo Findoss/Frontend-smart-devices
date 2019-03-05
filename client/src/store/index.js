@@ -23,7 +23,7 @@ export default new Vuex.Store({
 
     errors: [],
 
-    showMenu: false,
+    showMenu: true,
     showConnectModal: false,
 
     ip: '127.0.0.1',
@@ -31,6 +31,7 @@ export default new Vuex.Store({
 
     isLoadDevice: false,
 
+    local: 'en',
     languages: ['en', 'ru'],
   },
 
@@ -62,9 +63,16 @@ export default new Vuex.Store({
     TOGGLE_LOAD_DEVICE(state) {
       state.isLoadDevice = !state.isLoadDevice;
     },
+    SET_LOCAL(state, local) {
+      state.local = local;
+    },
   },
 
   actions: {
+    setLocal({ commit }, local) {
+      commit('SET_LOCAL', local);
+    },
+
     addAlert({ commit }, alert) {
       commit('ADD_ALERT', alert);
     },
@@ -72,11 +80,6 @@ export default new Vuex.Store({
     toggleConnectModal({ commit }) {
       commit('TOGGLE_CONNECT_MODAL');
     },
-
-    // setURL({ dispatch }, payload) {
-    //   dispatch('setIP', payload.ip);
-    //   dispatch('setPort', payload.port);
-    // },
 
     setIP({ commit }, payload) {
       commit('SET_IP', payload);
@@ -104,6 +107,7 @@ export default new Vuex.Store({
           const id = genId();
           const { type, microcontroller } = message.data;
           const initData = { socket, ...message.data };
+
           let storeModule = {};
 
           if (type === 'aw') storeModule = createStoreModuleAW(initData);
@@ -133,11 +137,17 @@ export default new Vuex.Store({
       socket.onerror = () => {
         commit('ADD_ALERT', { type: 'warning', message: 'error.connect' });
         commit('TOGGLE_LOAD_DEVICE');
-        socket.close();
+        // socket.close();
       };
     },
 
-    reconnectDevice({ commit, getters }) {},
+    reconnectDevice({ commit, getters }) {
+      /**
+       * смотрим наличие девайсов
+       * создаем модули на основе девайсов
+       *
+       */
+    },
 
     disconnectDevice({ commit, getters, dispatch }, id) {
       if (getters.devices.length === 1) {
@@ -193,7 +203,7 @@ export default new Vuex.Store({
     showConnectModal: state => state.showConnectModal,
     ip: state => state.ip,
     port: state => state.port,
-    language: state => state.language,
+    local: state => state.local,
     languages: state => state.languages,
   },
 
@@ -202,7 +212,7 @@ export default new Vuex.Store({
   plugins: [
     createPersistedState({
       key: 'SD-1',
-      paths: ['ip', 'port'],
+      paths: ['ip', 'port', 'local'],
     }),
   ],
 

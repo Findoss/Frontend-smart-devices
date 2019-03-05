@@ -12,7 +12,9 @@
       >
         <v-card>
           <v-card-title primary-title>
-            <h3 class="headline mb-0">{{ $t('pf.left') }}</h3>
+            <h3 class="headline mb-0">
+              {{ $t('pf.left') }}
+            </h3>
           </v-card-title>
           <v-card-text>
             <span class="xxl-text">
@@ -31,7 +33,9 @@
       >
         <v-card>
           <v-card-title primary-title>
-            <h3 class="headline mb-0">{{ $t('pf.portionsFeedLeft') }}</h3>
+            <h3 class="headline mb-0">
+              {{ $t('pf.portionsFeedLeft') }}
+            </h3>
           </v-card-title>
           <v-card-text class="xxl-text">
             {{ stateLocal.maxFeedingCount - stateLocal.feedingCount }}
@@ -46,7 +50,9 @@
       >
         <v-card>
           <v-card-title primary-title>
-            <h3 class="headline mb-0">{{ $t('pf.startFeeding') }}</h3>
+            <h3 class="headline mb-0">
+              {{ $t('pf.startFeeding') }}
+            </h3>
           </v-card-title>
           <v-card-text>
             <v-btn @click="startFeeding">
@@ -63,7 +69,9 @@
       >
         <v-card>
           <v-card-title primary-title>
-            <h3 class="headline mb-0">{{ $t('pf.feedUpdated') }}</h3>
+            <h3 class="headline mb-0">
+              {{ $t('pf.feedUpdated') }}
+            </h3>
           </v-card-title>
           <v-card-text>
             <v-btn @click="feedUpdated">
@@ -80,7 +88,9 @@
       >
         <v-card>
           <v-card-title primary-title>
-            <h3 class="headline mb-0">{{ $t('pf.doublePortion') }}</h3>
+            <h3 class="headline mb-0">
+              {{ $t('pf.doublePortion') }}
+            </h3>
           </v-card-title>
           <v-card-text>
             <v-switch
@@ -156,8 +166,6 @@ export default {
 
   created() {
     const { socket } = this.stateLocal;
-
-    console.log(socket);
 
     this.startTimerNextFeeding();
 

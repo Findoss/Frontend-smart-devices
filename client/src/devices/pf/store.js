@@ -61,7 +61,7 @@ export default initData => ({
       }
       if (portionsFeedLeft > 0 && portionsFeedLeft <= 2) {
         commit('ADD_ALERT', { type: 'info', message: 'pf.soonNoFeed' }, { root: true });
-      } else if (portionsFeedLeft === 0) {
+      } else if (portionsFeedLeft <= 0) {
         commit('ADD_ALERT', { type: 'warning', message: 'pf.noFeed' }, { root: true });
       }
     },
@@ -94,13 +94,15 @@ export default initData => ({
           hours: state.feedingInterval,
         });
 
-        const i = Interval.fromDateTimes(now, later)
-          .toDuration(['hours', 'minutes', 'seconds'])
-          .toObject();
+        if (now < later) {
+          const i = Interval.fromDateTimes(now, later)
+            .toDuration(['hours', 'minutes', 'seconds'])
+            .toObject();
 
-        const timeFormat = `${i.hours}:${Math.round(i.minutes)}:${Math.round(i.seconds)}`;
+          const timeFormat = `${i.hours}:${Math.round(i.minutes)}:${Math.round(i.seconds)}`;
 
-        commit('SET_NEXT_FEEDING_TIME', timeFormat);
+          commit('SET_NEXT_FEEDING_TIME', timeFormat);
+        }
       }, 1000);
       commit('SET_TIMER', id);
     },
@@ -117,7 +119,7 @@ export default initData => ({
 
     connectionError({ commit, state }) {
       commit('ADD_ALERT', { type: 'error', message: 'error.disconnect' }, { root: true });
-      state.socket.close();
+      // state.socket.close();
     },
 
     close({ commit, state }) {

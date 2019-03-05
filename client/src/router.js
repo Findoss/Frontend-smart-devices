@@ -10,7 +10,7 @@ import viewPF from './devices/pf/index.vue';
 Vue.use(Router);
 
 const router = new Router({
-  mode: 'history',
+  // mode: 'history',
   base: process.env.BASE_URL,
   routes: [
     {
@@ -22,11 +22,6 @@ const router = new Router({
       name: 'help',
       meta: { isNotEmpty: true },
       component: Help,
-    },
-    {
-      path: '/setting',
-      name: 'setting',
-      component: () => import('./views/settings.vue'),
     },
     {
       path: '/automatic-watering/:id',
