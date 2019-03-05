@@ -53,6 +53,7 @@
   "password": "Password",
   "pf": {
     "doublePortion": "Double portion",
+    "off": "off",
     "enoughServing": "Enough for 1 serving.",
     "feedUpdated": "Feed updated",
     "feeding": "Feeding, pet satisfied!",

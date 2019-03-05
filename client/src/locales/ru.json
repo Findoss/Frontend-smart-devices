@@ -54,6 +54,7 @@
   "pf": {
     "doublePortion": "Double portion",
     "enoughServing": "Enough for 1 serving.",
+    "off": "выкл",
     "feedUpdated": "Feed updated",
     "feeding": "Feeding, pet satisfied!",
     "feedingInterval": "Feeding interval",
