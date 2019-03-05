@@ -75,7 +75,8 @@
           box
           :label="$t('language')"
           :items="itemLanguages"
-          v-model="$i18n.locale"
+          :value="local"
+          @change="(local)=> updateLocal(local)"
         />
       </v-list-tile>
 
@@ -98,7 +99,7 @@ export default {
       'devicesLimit',
       'activeIndexDevice',
       'languages',
-      'language',
+      'local',
     ]),
 
     itemLanguages() {
@@ -118,7 +119,15 @@ export default {
       'disconnectDevice',
       'selectDevice',
       'toggleMenu',
+      'setLocal',
     ]),
+
+    updateLocal(local) {
+      // console.log(local);
+
+      this.$i18n.locale = local;
+      this.setLocal(local);
+    },
 
     goHelp() {
       Router.replace({ name: 'help' });

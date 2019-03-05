@@ -34,5 +34,18 @@ export default {
     'z-header': Header,
     'z-menu': Menu,
   },
+  computed: {
+    ...mapGetters(['local']),
+  },
+
+  methods: {
+    restoreLocal() {
+      this.$i18n.locale = this.local;
+    },
+  },
+
+  created() {
+    this.restoreLocal();
+  },
 };
 </script>
