@@ -3,7 +3,7 @@ import { DateTime, Interval } from 'luxon';
 export default initData => ({
   state() {
     return {
-      microcontroller: initData.microcontroller,
+      name: initData.microcontroller,
       feedingCount: initData.feedingCount,
       maxFeedingCount: initData.maxFeedingCount,
       doublePortion: initData.doublePortion,
@@ -16,11 +16,11 @@ export default initData => ({
   },
 
   mutations: {
-    SET_NEXT_FEEDING_TIME(state, payload) {
-      state.nextFeedingTime = payload;
+    SET_NEXT_FEEDING_TIME(state, number) {
+      state.nextFeedingTime = number;
     },
-    SET_TIMER(state, payload) {
-      state.idTimerNextFeeding = payload;
+    SET_TIMER(state, id) {
+      state.idTimerNextFeeding = id;
     },
     DEL_TIMER(state) {
       clearInterval(state.idTimerNextFeeding);
@@ -35,8 +35,8 @@ export default initData => ({
     RESET_LAST_FEEDING_TIME(state) {
       state.lastFeedingTime = Date.now();
     },
-    UPDATE_FEEDING_INTERVAL(state, payload) {
-      state.feedingInterval = payload;
+    UPDATE_FEEDING_INTERVAL(state, number) {
+      state.feedingInterval = number;
     },
     TOGGLE_DOUBLE_PORTION(state) {
       state.doublePortion = !state.doublePortion;
@@ -50,19 +50,19 @@ export default initData => ({
       if (portionsFeedLeft >= 1) {
         if (state.doublePortion) {
           if (portionsFeedLeft < 2) {
-            commit('ADD_ALERT', { type: 'info', message: 'pf.enoughServing' }, { root: true });
+            commit('ADD_ALERT', { type: 'info', message: 'pf.enoughServing', device: state.name }, { root: true });
           } else {
             commit('INC_FEEDING_COUNT');
           }
         }
         commit('INC_FEEDING_COUNT');
         commit('RESET_LAST_FEEDING_TIME');
-        commit('ADD_ALERT', { type: 'success', message: 'pf.feeding' }, { root: true });
+        commit('ADD_ALERT', { type: 'success', message: 'pf.feeding', device: state.name }, { root: true });
       }
       if (portionsFeedLeft > 0 && portionsFeedLeft <= 2) {
-        commit('ADD_ALERT', { type: 'info', message: 'pf.soonNoFeed' }, { root: true });
+        commit('ADD_ALERT', { type: 'info', message: 'pf.soonNoFeed', device: state.name }, { root: true });
       } else if (portionsFeedLeft <= 0) {
-        commit('ADD_ALERT', { type: 'warning', message: 'pf.noFeed' }, { root: true });
+        commit('ADD_ALERT', { type: 'warning', message: 'pf.noFeed', device: state.name }, { root: true });
       }
     },
 
@@ -72,9 +72,8 @@ export default initData => ({
     },
 
     newFeedingInterval({ commit, dispatch }, data) {
-      const hour = Number(data.substring(0, 2));
-      commit('UPDATE_FEEDING_INTERVAL', hour);
-      dispatch('connectionSend', { event: 'feedingInterval', data: hour });
+      commit('UPDATE_FEEDING_INTERVAL', data);
+      dispatch('connectionSend', { event: 'feedingInterval', data });
     },
 
     feedUpdated({ commit, dispatch }) {
@@ -118,7 +117,7 @@ export default initData => ({
     },
 
     connectionError({ commit, state }) {
-      commit('ADD_ALERT', { type: 'error', message: 'error.disconnect' }, { root: true });
+      commit('ADD_ALERT', { type: 'error', message: 'error.disconnect', device: state.name }, { root: true });
       // state.socket.close();
     },
 

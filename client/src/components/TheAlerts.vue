@@ -7,14 +7,14 @@
       md4
     >
       <v-alert
-        v-for="(error) of errors"
-        :value="error.message"
+        v-for="(alert) of alerts"
+        :value="alert.message"
         :dismissible="true"
-        :type="error.type"
-        :key="error.key"
+        :type="alert.type"
+        :key="alert.key"
         class="pointer-events"
       >
-        {{ $t(error.message) }}
+        {{ alert.device }} {{ $t(alert.message) }}
       </v-alert>
     </v-flex>
   </v-layout>
@@ -29,7 +29,7 @@ export default {
   name: 'z-global-alerts',
 
   computed: {
-    ...mapGetters(['errors']),
+    ...mapGetters(['alerts']),
   },
 };
 </script>

@@ -39,6 +39,7 @@ export default {
   },
 
   methods: {
+    ...mapActions(['reconnectDevices']),
     restoreLocal() {
       this.$i18n.locale = this.local;
     },
@@ -46,6 +47,7 @@ export default {
 
   created() {
     this.restoreLocal();
+    this.reconnectDevices();
   },
 };
 </script>

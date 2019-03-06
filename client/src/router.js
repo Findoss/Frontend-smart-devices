@@ -41,11 +41,12 @@ const router = new Router({
 router.beforeEach((to, from, next) => {
   const isNotEmpty = to.matched.some(r => r.meta.isNotEmpty);
 
-  const { getters } = store;
+  const { getters, state } = store;
   const { devices } = getters;
   const isDevices = !!devices.length;
+  const isModuleDevice = !!state[from.params.id];
 
-  if (isNotEmpty && !isDevices) {
+  if ((isNotEmpty && !isDevices) || (isNotEmpty && !isModuleDevice)) {
     next({ name: 'root' });
   }
 
