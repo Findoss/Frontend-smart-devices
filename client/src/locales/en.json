@@ -66,6 +66,7 @@
     "soonNoFeed": "Soon there is no feed.",
     "startFeeding": "Start feeding",
     "x2Portion": "x2 portion"
+    "mode": ["cat", "fish", "dog"],
   },
   "port": "port",
   "settings": "Settings",

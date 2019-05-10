@@ -12,6 +12,7 @@ export default initData => ({
       socket: initData.socket,
       nextFeedingTime: '',
       idTimerNextFeeding: null,
+      mode: initData.mode,
     };
   },
 
@@ -41,6 +42,9 @@ export default initData => ({
     TOGGLE_DOUBLE_PORTION(state) {
       state.doublePortion = !state.doublePortion;
     },
+
+    SET_MODE(state, number) {
+      state.mode = number;
   },
 
   actions: {
@@ -84,6 +88,9 @@ export default initData => ({
     doublePortion({ commit, dispatch }, data) {
       dispatch('connectionSend', { event: 'doublePortion', data: Boolean(data) });
       commit('TOGGLE_DOUBLE_PORTION');
+    setMode({ commit, dispatch }, data) {
+      dispatch('connectionSend', { event: 'mode', data });
+      commit('SET_MODE', data);
     },
 
     startTimerNextFeeding({ commit, state }) {

@@ -7,6 +7,7 @@ const initData = {
   feedingCount: 2,
   maxFeedingCount: 10,
   doublePortion: false,
+  mode: 1,
   feedingInterval: 3,
   lastFeedingTime: (() => Date.now() - 1000000)(),
   type: "pf",
