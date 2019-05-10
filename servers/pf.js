@@ -6,7 +6,7 @@ const http = require("http");
 const initData = {
   feedingCount: 2,
   maxFeedingCount: 10,
-  doublePortion: false,
+  countPortion: 1,
   mode: 1,
   feedingInterval: 3,
   lastFeedingTime: (() => Date.now() - 1000000)(),
