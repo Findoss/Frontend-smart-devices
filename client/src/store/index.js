@@ -35,30 +35,39 @@ export default new Vuex.Store({
     ADD_ALERT(state, alert) {
       state.alerts.push({ ...alert, key: genId() });
     },
+
     ADD_DEVICE(state, payload) {
       state.devices.push(payload);
     },
+
     DEL_DEVICE(state, id) {
       state.devices.splice(state.devices.findIndex(d => d.id === id), 1);
     },
+
     SET_DEVICE(state, id) {
       state.activeIndexDevice = id;
     },
+
     SET_IP(state, ip) {
       state.ip = ip;
     },
+
     SET_PORT(state, port) {
       state.port = port;
     },
+
     TOGGLE_CONNECT_MODAL(state) {
       state.showConnectModal = !state.showConnectModal;
     },
+
     TOGGLE_MENU(state) {
       state.showMenu = !state.showMenu;
     },
+
     TOGGLE_LOAD_DEVICE(state) {
       state.isLoadDevice = !state.isLoadDevice;
     },
+
     SET_LOCAL(state, local) {
       state.local = local;
     },
