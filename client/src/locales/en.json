@@ -10,8 +10,7 @@
       "humidity": "Humidity",
       "humidityMinimum": "Humidity minimum"
     },
-    "eachHour": "each hour",
-    "everyday": "everyday",
+    "modeItems": [{ "text": "each hour", "value": true }, { "text": "everyday", "value": false }],
     "modalAutomaticWatering": "Disabling the automatic irrigation system, soil moisture will be measured. Do you want to continue?",
     "modalWateringMode": "Сhanging the watering time, removing all statistics and the system will start a new cycle. Are you sure you want to switch mode?",
     "rage": {
@@ -23,6 +22,9 @@
     "sensorAnalysis": "Sensor analysis",
     "settings": "Settings",
     "statistics": "Soil moisture statistics",
+    "actions": "Actions",
+    "mode": "Mode",
+    "timeLeft": "Time",
     "systemCheck": "System check",
     "wateringMode": "Watering mode"
   },
