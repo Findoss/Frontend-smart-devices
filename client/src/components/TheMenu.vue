@@ -76,7 +76,7 @@
           :label="$t('language')"
           :items="itemLanguages"
           :value="local"
-          @change="(local)=> updateLocal(local)"
+          @change="updateLocal"
         />
       </v-list-tile>
 
