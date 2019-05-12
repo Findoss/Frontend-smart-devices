@@ -215,8 +215,9 @@ export default new Vuex.Store({
       }
 
       commit('DEL_DEVICE', id);
-      dispatch(`${id}/close`);
-      this.unregisterModule(id);
+      dispatch(`${id}/close`).finally(() => {
+        this.unregisterModule(id);
+      });
     },
 
     selectDevice({ commit, getters }, id) {
@@ -230,6 +231,7 @@ export default new Vuex.Store({
       if (state.devices.length) {
         return getters.deviceById(getters.activeIndexDevice).title;
       }
+      return ' ';
     },
     devices: (state) => {
       const devices = state.devices.map((device) => {
@@ -268,7 +270,7 @@ export default new Vuex.Store({
   plugins: [
     createPersistedState({
       key: 'SD-1',
-      paths: ['ip', 'port', 'local', 'activeIndexDevice', 'devices', 'showMenu'],
+      paths: ['ip', 'port', 'local', 'activeIndexDevice', 'showMenu'],
     }),
   ],
 

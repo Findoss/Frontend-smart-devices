@@ -30,15 +30,15 @@ const wsServer = new WebSocketServer({
 wsServer.on("request", request => {
   const connection = request.accept(null, request.origin);
 
-  setInterval(() => {
-    console.log("← send newHumidity");
-    connection.send(
-      JSON.stringify({
-        event: "newHumidity",
-        data: Math.floor(Math.random() * (100 - 50) + 50)
-      })
-    );
-  }, 5000);
+  // setInterval(() => {
+  //   console.log("← send newHumidity");
+  //   connection.send(
+  //     JSON.stringify({
+  //       event: "newHumidity",
+  //       data: Math.floor(Math.random() * (100 - 50) + 50)
+  //     })
+  //   );
+  // }, 5000);
 
   setTimeout(() => {
     console.log("← send init");
