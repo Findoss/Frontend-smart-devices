@@ -42,15 +42,15 @@ export default initData => ({
       state.humidity = number;
     },
 
-    TOGGLE_AUTOTESTING(state) {
+    TOGGLE_AUTO_TESTING(state) {
       state.autotesting = !state.autotesting;
     },
 
-    TOGGLE_SENSORANALYSIS(state) {
+    TOGGLE_SENSOR_ANALYSIS(state) {
       state.sensorAnalysis = !state.sensorAnalysis;
     },
 
-    TOGGLE_AUTOMATICWATERING(state) {
+    TOGGLE_AUTOMATIC_WATERING(state) {
       state.automaticWatering = !state.automaticWatering;
     },
 
@@ -105,21 +105,21 @@ export default initData => ({
     },
 
     toggleAutotesting({ dispatch, commit, state }) {
-      commit('TOGGLE_AUTOTESTING');
+      commit('TOGGLE_AUTO_TESTING');
       dispatch('connectionSend', { event: 'setAutotesting', data: state.autotesting });
     },
 
     toggleSensorAnalysis({ dispatch, commit, state }) {
-      commit('TOGGLE_SENSORANALYSIS');
+      commit('TOGGLE_SENSOR_ANALYSIS');
       dispatch('connectionSend', { event: 'setSensorAnalysis', data: state.sensorAnalysis });
     },
 
     toggleAutomaticWatering({ dispatch, commit, state }) {
-      commit('TOGGLE_AUTOMATICWATERING');
+      commit('TOGGLE_AUTOMATIC_WATERING');
       dispatch('connectionSend', { event: 'setAutomaticWatering', data: state.automaticWatering });
     },
 
-    /** * */
+    /** input */
     socket_newHumidity({ commit }, data) {
       commit('ADD_DATA_HUMIDITY', data);
     },
@@ -132,7 +132,7 @@ export default initData => ({
     socket_setAutomaticWatering() {},
     socket_setWateringMode() {},
 
-    /** * */
+    /** socket */
     connectionEvent({ dispatch }, payload) {
       dispatch(`socket_${payload.event}`, payload.data);
     },
@@ -142,16 +142,17 @@ export default initData => ({
       state.socket.send(message);
     },
 
-    connectionError({ commit, state }) {
+    connectionError({ commit, state, dispatch }) {
       commit(
         'ADD_ALERT',
         { type: 'error', message: 'error.disconnect', device: state.name },
         { root: true },
       );
-      // state.socket.close();
+      state.socket.close();
     },
 
     close({ commit, state }) {
+      commit('DEL_TIMER');
       state.socket.close();
     },
   },

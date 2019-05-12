@@ -39,12 +39,14 @@
               </h3>
               <v-btn
                 large
+                class="ml-0 mr-3"
                 @click="restart"
               >
                 {{ $t('aw.restart') }}
               </v-btn>
               <v-btn
                 large
+                class="ml-0"
                 @click="systemCheck"
               >
                 {{ $t('aw.systemCheck') }}
@@ -63,7 +65,6 @@
               <v-select
                 box
                 solo
-                :label="$t('aw.mode')"
                 :items="$t(`aw.modeItems`)"
                 @change="dialogWateringMode = !dialogWateringMode"
                 :value="stateLocal.wateringMode"
@@ -112,7 +113,7 @@
                 max="90"
                 ticks="always"
                 :tick-labels="tickLabels()"
-                tick-size="2"
+                tick-size="3"
                 class="mx-4"
                 @change="setHumidity"
                 :value="stateLocal.humidity"
@@ -129,19 +130,19 @@
               <h3 class="headline mb-0">
                 {{ $t('aw.settings') }}
               </h3>
-              <v-switch
-                class="pa-0 ma-0 mt-3"
+              <v-checkbox
+                class="pa-0 ma-0 mt-4"
                 :label="$t('aw.automaticWatering')"
                 :input-value="stateLocal.automaticWatering"
                 @change="toggleDialogAutomaticWatering"
               />
-              <v-switch
+              <v-checkbox
                 class="pa-0 ma-0"
                 :label="$t('aw.sensorAnalysis')"
                 :input-value="stateLocal.sensorAnalysis"
                 @change="toggleSensorAnalysis"
               />
-              <v-switch
+              <v-checkbox
                 class="pa-0 ma-0"
                 :label="$t('aw.autotesting')"
                 :input-value="stateLocal.autotesting"
@@ -161,7 +162,7 @@
         <v-card>
           <v-card-title primary-title>
             <h3 class="headline mb-0">
-              {{ $t('aw.chart.humidity') }}
+              {{ $t('aw.statistics') }}
             </h3>
           </v-card-title>
           <v-card-text>
@@ -185,11 +186,12 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn
+            <!-- <v-btn
               color="primary"
               @click="dialogWateringMode = false"
-            >{{ $t('buttonNO') }}</v-btn>
-            <v-btn @click="toggleMode">{{ $t('buttonYES') }}</v-btn>
+            >{{ $t('buttonNO') }}</v-btn> -->
+            <!-- <v-btn @click="toggleMode">{{ $t('buttonYES') }}</v-btn> -->
+            <v-btn @click="toggleMode">{{ $t('buttonOK') }}</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -206,11 +208,12 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn
+            <!-- <v-btn
               color="primary"
               @click="dialogAutomaticWatering = false"
-            >{{ $t('buttonNO') }}</v-btn>
-            <v-btn @click="toggleAutomaticWatering">{{ $t('buttonYES') }}</v-btn>
+            >{{ $t('buttonNO') }}</v-btn> -->
+            <!-- <v-btn @click="toggleAutomaticWatering">{{ $t('buttonYES') }}</v-btn> -->
+            <v-btn @click="toggleAutomaticWatering">{{ $t('buttonOK') }}</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -250,7 +253,7 @@ export default {
     },
 
     color() {
-      const h = this.stateLocal.humidity;
+      const h = this.lastHumidity;
       if (h < 10) return 'brown';
       if (h < 35) return 'amber';
       if (h < 50) return 'lime';
@@ -344,9 +347,14 @@ export default {
   },
 
   methods: {
+    log(e) {
+      console.log(e);
+    },
+
     tickLabels() {
       let labels = [];
-      for (let i = 5; i < 91; i += 5) {
+      for (let i = 10; i < 91; i += 10) {
+        labels.push('');
         labels.push(i);
       }
       return labels;
@@ -386,8 +394,10 @@ export default {
       this.$store.dispatch(`${this.$store.getters['activeIndexDevice']}/toggleMode`);
     },
 
-    toggleDialogAutomaticWatering: function() {
-      this.dialogAutomaticWatering = true;
+    toggleDialogAutomaticWatering: function(v) {
+      if (!v) {
+        this.dialogAutomaticWatering = true;
+      }
     },
   },
 

@@ -64,7 +64,7 @@
               <v-icon>remove</v-icon>
             </v-btn>
             <span class="xxl-text ma-0">
-              {{ stateLocal.countPortion }}
+              {{ stateLocal.countPortion ? stateLocal.countPortion : ''}}
             </span>
             <v-btn
               fab
@@ -117,7 +117,7 @@
           </v-card-title>
           <v-card-text>
             <span class="xxl-text">
-              {{ stateLocal.nextFeedingTime }}
+              {{ stateLocal.nextFeedingTime ? stateLocal.nextFeedingTime : '' }}
             </span>
             <br>
             <br>

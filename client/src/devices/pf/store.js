@@ -66,7 +66,7 @@ export default initData => ({
           // невозможно
           commit(
             'ADD_ALERT',
-            { type: 'info', message: 'pf.soonNoFeed', device: state.name },
+            { type: 'warning', message: 'pf.soonNoFeed', device: state.name },
             { root: true },
           );
         } else {
@@ -168,13 +168,13 @@ export default initData => ({
       state.socket.send(message);
     },
 
-    connectionError({ commit, state }) {
+    connectionError({ commit, state, dispatch }) {
       commit(
         'ADD_ALERT',
         { type: 'error', message: 'error.disconnect', device: state.name },
         { root: true },
       );
-      // state.socket.close();
+      state.socket.close();
     },
 
     close({ commit, state }) {
