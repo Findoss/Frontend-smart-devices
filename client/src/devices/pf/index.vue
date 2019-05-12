@@ -6,58 +6,108 @@
     <v-layout wrap>
 
       <v-flex
-        xs12
-        sm8
-        md8
-      >
-        <v-card>
-          <v-card-title primary-title>
-            <h3 class="headline mb-0">
-              {{ $t('pf.feedingInterval') }}
-            </h3>
-          </v-card-title>
-          <v-card-text>
-            <v-slider
-              step="1"
-              min="0"
-              max="11"
-              ticks="always"
-              :tick-labels="[$t('pf.off'),1,2,3,4,5,6,7,8,9,11,12]"
-              tick-size="2"
-              class="mx-4"
-              @change="newFeedingInterval"
-              :value="stateLocal.feedingInterval"
-            />
-          </v-card-text>
-        </v-card>
-      </v-flex>
-
-      <v-flex
-        xs12
-        sm6
-        md4
-      >
-        <v-card>
-          <v-card-title primary-title>
-            <h3 class="headline mb-0">
-              {{ $t('pf.doublePortion') }}
-            </h3>
-          </v-card-title>
-          <v-card-text>
-            <v-switch
-              :value="stateLocal.doublePortion"
-              :label="$t('pf.x2Portion')"
-              @change="doublePortion"
-              color="success"
-            />
-          </v-card-text>
-        </v-card>
-      </v-flex>
-
-      <v-flex
-        xs12
-        sm6
+        d-flex
         md6
+        sm12
+        xs12
+      >
+        <v-card>
+          <v-card-title primary-title>
+            <h3 class="headline mb-0">
+              {{ $t('pf.actions') }}
+            </h3>
+          </v-card-title>
+          <v-container
+            align-center
+            justify-center
+          >
+            <v-btn
+              large
+              color="primary"
+              class="s mb-4"
+              @click="startFeeding"
+            >
+              {{ $t('pf.startFeeding') }}
+            </v-btn>
+            <v-btn
+              large
+              color="primary"
+              class="s mb-4"
+              @click="feedUpdated"
+            >
+              {{ $t('pf.feedUpdated') }}
+            </v-btn>
+          </v-container>
+        </v-card>
+      </v-flex>
+
+      <v-flex
+        d-flex
+        md3
+        sm6
+        xs12
+      >
+        <v-card>
+          <v-card-title primary-title>
+            <h3 class="headline mb-0">
+              {{ $t('pf.countPortion') }}
+            </h3>
+          </v-card-title>
+          <v-card-text>
+            <v-btn
+              fab
+              small
+              color="primary"
+              class="elevation-0 s"
+              @click="decrementCountPortion"
+            >
+              <v-icon>remove</v-icon>
+            </v-btn>
+            <span class="xxl-text ma-0">
+              {{ stateLocal.countPortion ? stateLocal.countPortion : ''}}
+            </span>
+            <v-btn
+              fab
+              small
+              color="primary"
+              class="elevation-0 s"
+              @click="incrementCountPortion"
+            >
+              <v-icon>add</v-icon>
+            </v-btn>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+
+      <v-flex
+        d-flex
+        md3
+        sm6
+        xs12
+      >
+        <v-card>
+          <v-card-title primary-title>
+            <h3 class="headline mb-0">
+              {{ $t('pf.portionsLeft') }}
+            </h3>
+          </v-card-title>
+          <v-card-text>
+            <span class="xxl-text">
+              {{ stateLocal.maxFeedingCount - stateLocal.feedingCount }}
+            </span>
+            {{ $t('pf.outOf') }}
+            <span class="xxl-text">
+              {{ stateLocal.maxFeedingCount }}
+            </span>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+
+      <v-flex
+        d-flex
+        md3
+        sm12
+        xs12
       >
         <v-card>
           <v-card-title primary-title>
@@ -67,71 +117,90 @@
           </v-card-title>
           <v-card-text>
             <span class="xxl-text">
-              {{ stateLocal.nextFeedingTime }}
+              {{ stateLocal.nextFeedingTime ? stateLocal.nextFeedingTime : '' }}
             </span>
             <br>
-            {{ $t('pf.lastFeedingTime') }} {{ lastFeedingTime }}
-          </v-card-text>
-        </v-card>
-      </v-flex>
-
-      <v-flex
-        xs12
-        sm6
-        md6
-      >
-        <v-card>
-          <v-card-title primary-title>
+            <br>
             <h3 class="headline mb-0">
-              {{ $t('pf.portionsFeedLeft') }}
+              {{ $t('pf.lastFeedingTime') }}
             </h3>
-          </v-card-title>
-          <v-card-text class="xxl-text">
-            {{ stateLocal.maxFeedingCount - stateLocal.feedingCount }}
+            {{ lastFeedingTime }}
           </v-card-text>
         </v-card>
       </v-flex>
 
       <v-flex
+        d-flex
+        md9
+        sm12
         xs12
-        sm6
-        md3
       >
         <v-card>
           <v-card-title primary-title>
             <h3 class="headline mb-0">
-              {{ $t('pf.startFeeding') }}
+              {{ $t('pf.feedingInterval') }}
             </h3>
           </v-card-title>
           <v-card-text>
-            <v-btn @click="startFeeding">
-              {{ $t('pf.startFeeding') }}
-            </v-btn>
+            <span class="xxl-text feeding-interval">
+              {{ stateLocal.feedingInterval }} {{ $t('pf.hours') }}
+            </span>
+            <v-slider
+              step="1"
+              min="0"
+              max="12"
+              ticks="always"
+              thumb-label
+              tick-size="3"
+              class="mx-1"
+              @change="newFeedingInterval"
+              :value="stateLocal.feedingInterval"
+            />
           </v-card-text>
         </v-card>
       </v-flex>
 
       <v-flex
+        d-flex
+        md12
+        sm12
         xs12
-        sm6
-        md3
       >
         <v-card>
           <v-card-title primary-title>
             <h3 class="headline mb-0">
-              {{ $t('pf.feedUpdated') }}
+              {{ $t('pf.feedingMode') }}
             </h3>
           </v-card-title>
-          <v-card-text>
-            <v-btn @click="feedUpdated">
-              {{ $t('pf.feedUpdated') }}
-            </v-btn>
-          </v-card-text>
+          <v-layout
+            wrap
+            align-center
+            justify-space-around
+            row
+          >
+            <v-flex
+              v-for="i in 3"
+              :key="i"
+              md3
+              sm3
+              xs12
+              :class="['px-3','py-3', 'mb-4', 'elevation-2',
+              'item_mode'
+              , stateLocal.mode === i ? 'item_mode-active':'']"
+              @click="setMode(i)"
+            >
+              <span class="text-bg text-uppercase">
+                {{ $t(`pf.mode.${i-1}`) }}
+              </span>
+              <img :src="`img/${i}.png`">
+            </v-flex>
+          </v-layout>
+
         </v-card>
       </v-flex>
-    </v-layout>
 
     </v-layout>
+
   </v-container>
 
 </template>
@@ -156,10 +225,25 @@ export default {
 
   methods: {
     newFeedingInterval: function(payload) {
-      this.$store.dispatch(`${this.$store.getters['activeIndexDevice']}/newFeedingInterval`, payload);
+      this.$store.dispatch(
+        `${this.$store.getters['activeIndexDevice']}/newFeedingInterval`,
+        payload
+      );
     },
-    doublePortion: function(payload) {
-      this.$store.dispatch(`${this.$store.getters['activeIndexDevice']}/doublePortion`, payload);
+    countPortion: function(payload) {
+      this.$store.dispatch(`${this.$store.getters['activeIndexDevice']}/countPortion`, payload);
+    },
+    incrementCountPortion: function(payload) {
+      this.$store.dispatch(
+        `${this.$store.getters['activeIndexDevice']}/countPortion`,
+        this.stateLocal.countPortion + 1
+      );
+    },
+    decrementCountPortion: function(payload) {
+      this.$store.dispatch(
+        `${this.$store.getters['activeIndexDevice']}/countPortion`,
+        this.stateLocal.countPortion - 1
+      );
     },
     startFeeding: function() {
       this.$store.dispatch(`${this.$store.getters['activeIndexDevice']}/startFeeding`);
@@ -169,6 +253,9 @@ export default {
     },
     startTimerNextFeeding: function() {
       this.$store.dispatch(`${this.$store.getters['activeIndexDevice']}/startTimerNextFeeding`);
+    },
+    setMode: function(payload) {
+      this.$store.dispatch(`${this.$store.getters['activeIndexDevice']}/setMode`, payload);
     },
   },
 
@@ -181,5 +268,49 @@ export default {
 <style>
 .xxl-text {
   font-size: 2.25rem;
+}
+
+.s {
+  border-radius: 0 !important;
+  margin-top: -10px !important;
+}
+
+.item_mode {
+  border-radius: 5px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  height: 130px;
+}
+
+.item_mode img {
+  display: block;
+}
+
+.item_mode:hover {
+  background-color: #bbdefb;
+}
+
+.item_mode-active {
+  background-color: #81c784;
+}
+
+.feeding-interval {
+  display: block;
+  text-align: center;
+}
+
+.text-bg {
+  font-size: 35px;
+  display: inline;
+  position: absolute;
+  font-weight: bold;
+  color: rgba(0, 0, 0, 0.15);
+  top: 0;
+  right: 5%;
+}
+
+.item_mode-active .text-bg::after {
+  content: '✔';
 }
 </style>

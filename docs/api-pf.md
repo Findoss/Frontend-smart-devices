@@ -27,12 +27,12 @@
 }
 ```
 
-2. Двойная порция
+2. Количество порций
 
 ```
 {
-  "event":"doublePortion",
-  "data": Boolean
+  "event":"countPortion",
+  "data": Number
 }
 ```
 
@@ -41,6 +41,15 @@
 ```
 {
   "event":"feedingInterval",
+  "data": Number
+}
+```
+
+4. Режим кормления cat / dog / fish
+
+```
+{
+  "event":"mode",
   "data": Number
 }
 ```
@@ -54,11 +63,12 @@
   "event":"init",
   "data": {
     microcontroller: String,    // название системы (вдруг их несколько)
-    doublePortion: Boolean,     // использовать двойную порцию для кормления
+    countPortion: Number,       // количество порций для кормления
     feedingInterval: Number,    // частота кормления
     feedingCount: Number,       // количество произведенных кормлений
     maxFeedingCount: Number,    // максимальное кол-во порций
     lastFeedingTime: Number     // время последнего кормления
+    mode: Number                // модель кормления ('cat'/'dog'/'fish')
     type: String,               // тип устройства (кормушка - 'pf')
   }
 }

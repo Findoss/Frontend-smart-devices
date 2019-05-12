@@ -6,12 +6,15 @@ export default initData => ({
       name: initData.microcontroller,
       feedingCount: initData.feedingCount,
       maxFeedingCount: initData.maxFeedingCount,
-      doublePortion: initData.doublePortion,
+      countPortion: initData.countPortion,
       lastFeedingTime: initData.lastFeedingTime,
       feedingInterval: initData.feedingInterval,
+
       socket: initData.socket,
+
       nextFeedingTime: '',
       idTimerNextFeeding: null,
+      mode: initData.mode,
     };
   },
 
@@ -19,27 +22,38 @@ export default initData => ({
     SET_NEXT_FEEDING_TIME(state, number) {
       state.nextFeedingTime = number;
     },
+
     SET_TIMER(state, id) {
       state.idTimerNextFeeding = id;
     },
+
     DEL_TIMER(state) {
       clearInterval(state.idTimerNextFeeding);
       state.idTimerNextFeeding = null;
     },
-    INC_FEEDING_COUNT(state) {
-      state.feedingCount += 1;
+
+    INC_FEEDING_COUNT(state, number = 1) {
+      state.feedingCount += number;
     },
+
     RESET_FEED(state) {
       state.feedingCount = 0;
     },
+
     RESET_LAST_FEEDING_TIME(state) {
       state.lastFeedingTime = Date.now();
     },
-    UPDATE_FEEDING_INTERVAL(state, number) {
+
+    UPDATE_FEEDING_INTERVAL(state, number = 5) {
       state.feedingInterval = number;
     },
-    TOGGLE_DOUBLE_PORTION(state) {
-      state.doublePortion = !state.doublePortion;
+
+    SET_COUNT_PORTION(state, number = 1) {
+      state.countPortion = number;
+    },
+
+    SET_MODE(state, number) {
+      state.mode = number;
     },
   },
 
@@ -47,22 +61,39 @@ export default initData => ({
     socket_feeding({ commit, state }) {
       const portionsFeedLeft = state.maxFeedingCount - state.feedingCount;
 
-      if (portionsFeedLeft >= 1) {
-        if (state.doublePortion) {
-          if (portionsFeedLeft < 2) {
-            commit('ADD_ALERT', { type: 'info', message: 'pf.enoughServing', device: state.name }, { root: true });
-          } else {
-            commit('INC_FEEDING_COUNT');
-          }
+      if (portionsFeedLeft < state.countPortion) {
+        if (portionsFeedLeft <= 0) {
+          // невозможно
+          commit(
+            'ADD_ALERT',
+            { type: 'warning', message: 'pf.soonNoFeed', device: state.name },
+            { root: true },
+          );
+        } else {
+          // возможно c условием
+          commit(
+            'ADD_ALERT',
+            { type: 'info', message: 'pf.reducePortion', device: state.name },
+            { root: true },
+          );
         }
-        commit('INC_FEEDING_COUNT');
+      } else {
+        // возможно
+        commit('INC_FEEDING_COUNT', state.countPortion);
         commit('RESET_LAST_FEEDING_TIME');
-        commit('ADD_ALERT', { type: 'success', message: 'pf.feeding', device: state.name }, { root: true });
-      }
-      if (portionsFeedLeft > 0 && portionsFeedLeft <= 2) {
-        commit('ADD_ALERT', { type: 'info', message: 'pf.soonNoFeed', device: state.name }, { root: true });
-      } else if (portionsFeedLeft <= 0) {
-        commit('ADD_ALERT', { type: 'warning', message: 'pf.noFeed', device: state.name }, { root: true });
+        commit(
+          'ADD_ALERT',
+          { type: 'success', message: 'pf.feeding', device: state.name },
+          { root: true },
+        );
+        if (portionsFeedLeft > state.countPortion && portionsFeedLeft < state.countPortion * 2) {
+          // предупреждение
+          commit(
+            'ADD_ALERT',
+            { type: 'info', message: 'pf.enoughServing', device: state.name },
+            { root: true },
+          );
+        }
       }
     },
 
@@ -81,9 +112,30 @@ export default initData => ({
       commit('RESET_FEED');
     },
 
-    doublePortion({ commit, dispatch }, data) {
-      dispatch('connectionSend', { event: 'doublePortion', data: Boolean(data) });
-      commit('TOGGLE_DOUBLE_PORTION');
+    countPortion({ commit, dispatch, state }, data) {
+      if (data > 0) {
+        if (data <= state.maxFeedingCount - state.feedingCount) {
+          dispatch('connectionSend', { event: 'countPortion', data });
+          commit('SET_COUNT_PORTION', data);
+        } else if (data > state.maxFeedingCount) {
+          commit(
+            'ADD_ALERT',
+            { type: 'info', message: 'pf.limitContainer', device: state.name },
+            { root: true },
+          );
+        } else if (data > state.maxFeedingCount - state.feedingCount) {
+          commit(
+            'ADD_ALERT',
+            { type: 'info', message: 'pf.noIncreasePortion', device: state.name },
+            { root: true },
+          );
+        }
+      }
+    },
+
+    setMode({ commit, dispatch }, data) {
+      dispatch('connectionSend', { event: 'mode', data });
+      commit('SET_MODE', data);
     },
 
     startTimerNextFeeding({ commit, state }) {
@@ -116,9 +168,13 @@ export default initData => ({
       state.socket.send(message);
     },
 
-    connectionError({ commit, state }) {
-      commit('ADD_ALERT', { type: 'error', message: 'error.disconnect', device: state.name }, { root: true });
-      // state.socket.close();
+    connectionError({ commit, state, dispatch }) {
+      commit(
+        'ADD_ALERT',
+        { type: 'error', message: 'error.disconnect', device: state.name },
+        { root: true },
+      );
+      state.socket.close();
     },
 
     close({ commit, state }) {
@@ -128,8 +184,10 @@ export default initData => ({
   },
 
   getters: {
-    lastFeedingTime(state) {
-      return DateTime.fromMillis(state.lastFeedingTime).toLocaleString(DateTime.DATETIME_MED);
+    lastFeedingTime(state, getters, rootState) {
+      return DateTime.fromMillis(state.lastFeedingTime)
+        .setLocale(rootState.local)
+        .toLocaleString(DateTime.DATETIME_MED);
     },
   },
 

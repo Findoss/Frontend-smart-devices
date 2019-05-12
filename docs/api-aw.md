@@ -33,7 +33,7 @@
 ```
 {
   "event":"setWateringMode",
-  "data": String
+  "data": Boolean
 }
 ```
 
@@ -44,7 +44,7 @@
 
 ```
 {
-  "event":"setautotesting",
+  "event":"setAutotesting",
   "data": Boolean
 }
 ```
@@ -56,7 +56,7 @@
 
 ```
 {
-  "event":"setsensorAnalysis",
+  "event":"setSensorAnalysis",
   "data": Boolean
 }
 ```
@@ -68,7 +68,7 @@
 
 ```
 {
-  "event":"setenergySavingMode",
+  "event":"setEnergySavingMode",
   "data": Boolean
 }
 ```
