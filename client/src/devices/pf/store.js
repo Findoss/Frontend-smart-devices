@@ -1,19 +1,22 @@
 import { DateTime, Interval } from 'luxon';
 
+const COEFFICIENT_MODE = [2, 3, 1];
+
 export default initData => ({
   state() {
     return {
-      name: initData.microcontroller,
-      feedingCount: initData.feedingCount,
-      maxFeedingCount: initData.maxFeedingCount,
-      countPortion: initData.countPortion,
-      lastFeedingTime: initData.lastFeedingTime,
-      feedingInterval: initData.feedingInterval,
-
       socket: initData.socket,
 
       nextFeedingTime: '',
       idTimerNextFeeding: null,
+
+      name: initData.microcontroller,
+      feedingCount: initData.feedingCount,
+      limitFeedingCount: initData.maxFeedingCount,
+      maxFeedingCount: initData.maxFeedingCount * COEFFICIENT_MODE[initData.mode - 1],
+      countPortion: initData.countPortion,
+      lastFeedingTime: initData.lastFeedingTime,
+      feedingInterval: initData.feedingInterval,
       mode: initData.mode,
     };
   },
@@ -54,6 +57,7 @@ export default initData => ({
 
     SET_MODE(state, number) {
       state.mode = number;
+      state.maxFeedingCount = state.limitFeedingCount * COEFFICIENT_MODE[number - 1];
     },
   },
 

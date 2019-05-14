@@ -238,7 +238,7 @@ export default new Vuex.Store({
         let icon = '';
         switch (device.type) {
           case 'aw':
-            icon = 'spa';
+            icon = 'local_florist';
             break;
           case 'pf':
             icon = 'pets';
