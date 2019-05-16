@@ -54,27 +54,13 @@
             </h3>
           </v-card-title>
           <v-card-text>
-            <v-btn
-              fab
-              small
-              color="primary"
-              class="elevation-0 s"
-              @click="decrementCountPortion"
-            >
-              <v-icon>remove</v-icon>
-            </v-btn>
-            <span class="xxl-text ma-0">
-              {{ stateLocal.countPortion }}
-            </span>
-            <v-btn
-              fab
-              small
-              color="primary"
-              class="elevation-0 s"
-              @click="incrementCountPortion"
-            >
-              <v-icon>add</v-icon>
-            </v-btn>
+            <v-checkbox
+              class="mt-2 ml-4"
+              style="transform: scale(1.3);"
+              :label="$t('pf.x2Portion')"
+              :input-value="stateLocal.countPortion === 2"
+              @change="(v) => v ? incrementCountPortion() : decrementCountPortion()"
+            />
           </v-card-text>
         </v-card>
       </v-flex>
