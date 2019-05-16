@@ -39,7 +39,7 @@
           </v-list-tile-action>
           <v-list-tile-content>
             <v-list-tile-title>
-              {{ device.title }}
+              {{ device.title || '' }}
             </v-list-tile-title>
           </v-list-tile-content>
           <v-btn

@@ -17,6 +17,7 @@
   "devices": "devices",
   "settings": "Settings",
   "help": "Help",
+  "successReconnect": "Success reconnect",
 
   "ip": "IP Adress",
   "port": "port",
@@ -58,7 +59,7 @@
     "feedingMode": "Feeding mode",
     "actions": "Actions",
     "mode": ["cat", "fish", "dog"],
-    "hours": "hours"
+    "hours": "hour(s)"
   },
 
   "aw": {

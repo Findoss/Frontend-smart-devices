@@ -98,6 +98,14 @@ export default new Vuex.Store({
       commit('TOGGLE_MENU');
     },
 
+    createDeviceModule({}, { type, id, initData }) {
+      let storeModule = {};
+      if (type === 'aw') storeModule = createStoreModuleAW(initData);
+      else if (type === 'pf') storeModule = createStoreModulePF(initData);
+      // else if (type === 'pf') storeModule = createStoreModulePF(socket);
+      this.registerModule(id, storeModule);
+    },
+
     connectDevice({
  commit, getters, state, dispatch 
 }) {
@@ -115,56 +123,47 @@ export default new Vuex.Store({
           const { type, microcontroller } = message.data;
           const initData = { socket, ...message.data };
 
-          dispatch('createDeviceModule', { type, id, initData });
+          dispatch('createDeviceModule', { type, id, initData }).then(() => {
+            commit('ADD_DEVICE', {
+              id,
+              url,
+              title: microcontroller,
+              type,
+            });
+            commit('TOGGLE_CONNECT_MODAL');
+            commit('SET_LOAD_DEVICE', false);
 
-          commit('ADD_DEVICE', {
-            id,
-            url,
-            title: microcontroller,
-            type,
+            dispatch('selectDevice', id);
+
+            if (getters.devicesLimit) {
+              commit('ADD_ALERT', { type: 'warning', message: 'error.devicesLimit' });
+            }
           });
-          commit('TOGGLE_CONNECT_MODAL');
-          commit('SET_LOAD_DEVICE', false);
-
-          commit('SET_DEVICE', id);
-          Router.replace({ name: type, params: { id } });
-
-          if (getters.devicesLimit) {
-            commit('ADD_ALERT', { type: 'warning', message: 'error.devicesLimit' });
-          }
         } else {
           dispatch(`${id}/connectionEvent`, message);
         }
       };
 
       socket.onerror = () => {
+        commit('SET_LOAD_DEVICE', false);
         commit('ADD_ALERT', {
           type: 'error',
           message: 'error.connect',
         });
-        commit('SET_LOAD_DEVICE', false);
       };
 
       socket.onclose = () => {
+        commit('SET_LOAD_DEVICE', false);
         commit('ADD_ALERT', {
           type: 'warning',
           message: 'error.close',
         });
-        commit('SET_LOAD_DEVICE', false);
       };
-    },
-
-    createDeviceModule({}, { type, id, initData }) {
-      let storeModule = {};
-      if (type === 'aw') storeModule = createStoreModuleAW(initData);
-      else if (type === 'pf') storeModule = createStoreModulePF(initData);
-      // else if (type === 'pf') storeModule = createStoreModulePF(socket);
-      this.registerModule(id, storeModule);
     },
 
     reconnectDevices({ state, commit, dispatch }) {
       if (state.devices.length) {
-        state.devices.forEach((device) => {
+        state.devices.forEach((device, i) => {
           const socket = new WebSocket(device.url);
 
           socket.onmessage = (data) => {
@@ -178,45 +177,56 @@ export default new Vuex.Store({
                 initData,
               });
 
-              Router.replace({ name: device.type, params: { id: state.activeIndexDevice } });
+              commit('ADD_ALERT', {
+                type: 'success',
+                message: 'successReconnect',
+                device: initData.microcontroller,
+              });
             } else {
               dispatch(`${device.id}/connectionEvent`, message);
             }
           };
 
           socket.onerror = () => {
+            commit('DEL_DEVICE', device.id);
             commit('ADD_ALERT', {
               type: 'error',
               message: 'error.connect',
-              device: device.name,
+              device: device.title,
             });
-            commit('SET_LOAD_DEVICE', false);
           };
 
-          socket.onclose = () => {
-            commit('ADD_ALERT', {
-              type: 'warning',
-              message: 'error.close',
-              device: device.name,
-            });
-            commit('SET_LOAD_DEVICE', false);
-            dispatch('disconnectDevice', device.id);
-          };
+          // socket.onclose = () => {
+          //   commit('SET_LOAD_DEVICE', false);
+          //   commit('ADD_ALERT', {
+          //     type: 'warning',
+          //     message: 'error.close',
+          //     device: device.title,
+          //   });
+          //   dispatch('disconnectDevice', device.id);
+          // };
         });
+
+        if (state.devices.length) {
+          let index = 0;
+          if (state.activeIndexDevice < state.devices.length - 1) {
+            index = state.activeIndexDevice;
+          }
+          dispatch('selectDevice', state.devices[index].id);
+        }
       }
     },
 
     disconnectDevice({ state, commit, dispatch }, id) {
-      if (state.devices.length === 1) {
-        commit('TOGGLE_CONNECT_MODAL');
-        Router.replace({ name: 'root' });
-      } else {
-        dispatch('selectDevice', state.devices[0].id);
-      }
-
-      commit('DEL_DEVICE', id);
       dispatch(`${id}/close`).finally(() => {
+        commit('DEL_DEVICE', id);
         this.unregisterModule(id);
+        if (state.devices.length === 0) {
+          commit('TOGGLE_CONNECT_MODAL');
+          Router.replace({ name: 'root' });
+        } else {
+          dispatch('selectDevice', state.devices[0].id);
+        }
       });
     },
 
@@ -229,7 +239,9 @@ export default new Vuex.Store({
   getters: {
     activeDevice: (state, getters) => {
       if (state.devices.length) {
-        return getters.deviceById(getters.activeIndexDevice).title;
+        return getters.deviceById(getters.activeIndexDevice)
+          ? getters.deviceById(getters.activeIndexDevice).title
+          : ' ';
       }
       return ' ';
     },
@@ -270,7 +282,7 @@ export default new Vuex.Store({
   plugins: [
     createPersistedState({
       key: 'SD-1',
-      paths: ['ip', 'port', 'local', 'activeIndexDevice', 'showMenu'],
+      paths: ['ip', 'port', 'local', 'activeIndexDevice', 'showMenu', 'devices'],
     }),
   ],
 
