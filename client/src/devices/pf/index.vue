@@ -64,7 +64,7 @@
               <v-icon>remove</v-icon>
             </v-btn>
             <span class="xxl-text ma-0">
-              {{ stateLocal.countPortion ? stateLocal.countPortion : ''}}
+              {{ stateLocal.countPortion }}
             </span>
             <v-btn
               fab
@@ -230,20 +230,11 @@ export default {
         payload
       );
     },
-    countPortion: function(payload) {
-      this.$store.dispatch(`${this.$store.getters['activeIndexDevice']}/countPortion`, payload);
-    },
     incrementCountPortion: function(payload) {
-      this.$store.dispatch(`${this.$store.getters['activeIndexDevice']}/countPortion`, {
-        count: this.stateLocal.countPortion + 1,
-        type: 'inc',
-      });
+      this.$store.dispatch(`${this.$store.getters['activeIndexDevice']}/countPortion`, 'inc');
     },
     decrementCountPortion: function(payload) {
-      this.$store.dispatch(`${this.$store.getters['activeIndexDevice']}/countPortion`, {
-        count: this.stateLocal.countPortion - 1,
-        type: 'dec',
-      });
+      this.$store.dispatch(`${this.$store.getters['activeIndexDevice']}/countPortion`, 'dec');
     },
     startFeeding: function() {
       this.$store.dispatch(`${this.$store.getters['activeIndexDevice']}/startFeeding`);
@@ -251,16 +242,15 @@ export default {
     feedUpdated: function() {
       this.$store.dispatch(`${this.$store.getters['activeIndexDevice']}/feedUpdated`);
     },
-    startTimerNextFeeding: function() {
-      this.$store.dispatch(`${this.$store.getters['activeIndexDevice']}/startTimerNextFeeding`);
-    },
     setMode: function(payload) {
       this.$store.dispatch(`${this.$store.getters['activeIndexDevice']}/setMode`, payload);
     },
   },
 
   mounted() {
-    this.startTimerNextFeeding();
+    setTimeout(() => {
+      this.$store.dispatch(`${this.$store.getters['activeIndexDevice']}/startTimerNextFeeding`);
+    }, 1000);
   },
 };
 </script>

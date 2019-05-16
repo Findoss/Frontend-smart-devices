@@ -58,6 +58,7 @@ export default initData => ({
     SET_MODE(state, number) {
       state.mode = number;
       state.maxFeedingCount = state.limitFeedingCount * COEFFICIENT_MODE[number - 1];
+      state.feedingCount = state.maxFeedingCount;
     },
   },
 
@@ -116,14 +117,17 @@ export default initData => ({
       commit('RESET_FEED');
     },
 
-    countPortion({ commit, dispatch, state }, { count, type }) {
+    countPortion({ commit, dispatch, state }, type) {
+      let count = state.countPortion;
+      type === 'inc' ? count++ : count--;
+
       if (count > 0) {
         const countFidingLeft = state.maxFeedingCount - state.feedingCount;
 
         if (count <= countFidingLeft) {
           dispatch('connectionSend', { event: 'countPortion', count });
           commit('SET_COUNT_PORTION', count);
-        } else if (count > state.maxFeedingCount && type === 'dec') {
+        } else if (count > countFidingLeft && type === 'dec') {
           commit('SET_COUNT_PORTION', countFidingLeft);
         } else if (count > state.maxFeedingCount && type === 'inc') {
           commit(
