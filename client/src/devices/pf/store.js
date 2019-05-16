@@ -1,19 +1,22 @@
 import { DateTime, Interval } from 'luxon';
 
+const COEFFICIENT_MODE = [2, 3, 1];
+
 export default initData => ({
   state() {
     return {
-      name: initData.microcontroller,
-      feedingCount: initData.feedingCount,
-      maxFeedingCount: initData.maxFeedingCount,
-      countPortion: initData.countPortion,
-      lastFeedingTime: initData.lastFeedingTime,
-      feedingInterval: initData.feedingInterval,
-
       socket: initData.socket,
 
       nextFeedingTime: '',
       idTimerNextFeeding: null,
+
+      name: initData.microcontroller,
+      feedingCount: initData.feedingCount,
+      limitFeedingCount: initData.maxFeedingCount,
+      maxFeedingCount: initData.maxFeedingCount * COEFFICIENT_MODE[initData.mode - 1],
+      countPortion: initData.countPortion,
+      lastFeedingTime: initData.lastFeedingTime,
+      feedingInterval: initData.feedingInterval,
       mode: initData.mode,
     };
   },
@@ -54,6 +57,8 @@ export default initData => ({
 
     SET_MODE(state, number) {
       state.mode = number;
+      state.maxFeedingCount = state.limitFeedingCount * COEFFICIENT_MODE[number - 1];
+      state.feedingCount = state.maxFeedingCount;
     },
   },
 
@@ -112,18 +117,25 @@ export default initData => ({
       commit('RESET_FEED');
     },
 
-    countPortion({ commit, dispatch, state }, data) {
-      if (data > 0) {
-        if (data <= state.maxFeedingCount - state.feedingCount) {
-          dispatch('connectionSend', { event: 'countPortion', data });
-          commit('SET_COUNT_PORTION', data);
-        } else if (data > state.maxFeedingCount) {
+    countPortion({ commit, dispatch, state }, type) {
+      let count = state.countPortion;
+      type === 'inc' ? count++ : count--;
+
+      if (count > 0) {
+        const countFidingLeft = state.maxFeedingCount - state.feedingCount;
+
+        if (count <= countFidingLeft) {
+          dispatch('connectionSend', { event: 'countPortion', count });
+          commit('SET_COUNT_PORTION', count);
+        } else if (count > countFidingLeft && type === 'dec') {
+          commit('SET_COUNT_PORTION', countFidingLeft);
+        } else if (count > state.maxFeedingCount && type === 'inc') {
           commit(
             'ADD_ALERT',
             { type: 'info', message: 'pf.limitContainer', device: state.name },
             { root: true },
           );
-        } else if (data > state.maxFeedingCount - state.feedingCount) {
+        } else if (count > countFidingLeft && type === 'inc') {
           commit(
             'ADD_ALERT',
             { type: 'info', message: 'pf.noIncreasePortion', device: state.name },

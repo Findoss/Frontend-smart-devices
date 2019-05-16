@@ -65,7 +65,7 @@
               <v-select
                 box
                 solo
-                :items="$t(`aw.modeItems`)"
+                :items="modeItems"
                 @change="dialogWateringMode = !dialogWateringMode"
                 :value="stateLocal.wateringMode"
               />
@@ -250,6 +250,19 @@ export default {
 
     stateLocal() {
       return this.$store.state[this.$store.getters['activeIndexDevice']];
+    },
+
+    modeItems() {
+      return [
+        {
+          text: this.$t(`aw.modeItems.0`),
+          value: true,
+        },
+        {
+          text: this.$t(`aw.modeItems.1`),
+          value: false,
+        },
+      ];
     },
 
     color() {

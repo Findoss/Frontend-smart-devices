@@ -17,6 +17,7 @@
   "devices": "devices",
   "settings": "Settings",
   "help": "Help",
+  "successReconnect": "Success reconnect",
 
   "ip": "IP Adress",
   "port": "port",
@@ -58,7 +59,7 @@
     "feedingMode": "Feeding mode",
     "actions": "Actions",
     "mode": ["cat", "fish", "dog"],
-    "hours": "hours"
+    "hours": "hour(s)"
   },
 
   "aw": {
@@ -73,7 +74,7 @@
     },
     "modalAutomaticWatering": "Disabling the automatic irrigation system, soil moisture will be measured. Do you want to continue?",
     "modalWateringMode": "Сhanging the watering time, removing all statistics and the system will start a new cycle. Are you sure you want to switch mode?",
-    "modeItems": [{ "text": "each hour", "value": true }, { "text": "everyday", "value": false }],
+    "modeItems": ["each hour", "everyday"],
     "restart": "Restart",
     "sensorAnalysis": "Sensor analysis",
     "settings": "Settings",
