@@ -234,16 +234,16 @@ export default {
       this.$store.dispatch(`${this.$store.getters['activeIndexDevice']}/countPortion`, payload);
     },
     incrementCountPortion: function(payload) {
-      this.$store.dispatch(
-        `${this.$store.getters['activeIndexDevice']}/countPortion`,
-        this.stateLocal.countPortion + 1
-      );
+      this.$store.dispatch(`${this.$store.getters['activeIndexDevice']}/countPortion`, {
+        count: this.stateLocal.countPortion + 1,
+        type: 'inc',
+      });
     },
     decrementCountPortion: function(payload) {
-      this.$store.dispatch(
-        `${this.$store.getters['activeIndexDevice']}/countPortion`,
-        this.stateLocal.countPortion - 1
-      );
+      this.$store.dispatch(`${this.$store.getters['activeIndexDevice']}/countPortion`, {
+        count: this.stateLocal.countPortion - 1,
+        type: 'dec',
+      });
     },
     startFeeding: function() {
       this.$store.dispatch(`${this.$store.getters['activeIndexDevice']}/startFeeding`);
@@ -259,7 +259,7 @@ export default {
     },
   },
 
-  created() {
+  mounted() {
     this.startTimerNextFeeding();
   },
 };

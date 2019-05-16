@@ -116,18 +116,22 @@ export default initData => ({
       commit('RESET_FEED');
     },
 
-    countPortion({ commit, dispatch, state }, data) {
-      if (data > 0) {
-        if (data <= state.maxFeedingCount - state.feedingCount) {
-          dispatch('connectionSend', { event: 'countPortion', data });
-          commit('SET_COUNT_PORTION', data);
-        } else if (data > state.maxFeedingCount) {
+    countPortion({ commit, dispatch, state }, { count, type }) {
+      if (count > 0) {
+        const countFidingLeft = state.maxFeedingCount - state.feedingCount;
+
+        if (count <= countFidingLeft) {
+          dispatch('connectionSend', { event: 'countPortion', count });
+          commit('SET_COUNT_PORTION', count);
+        } else if (count > state.maxFeedingCount && type === 'dec') {
+          commit('SET_COUNT_PORTION', countFidingLeft);
+        } else if (count > state.maxFeedingCount && type === 'inc') {
           commit(
             'ADD_ALERT',
             { type: 'info', message: 'pf.limitContainer', device: state.name },
             { root: true },
           );
-        } else if (data > state.maxFeedingCount - state.feedingCount) {
+        } else if (count > countFidingLeft && type === 'inc') {
           commit(
             'ADD_ALERT',
             { type: 'info', message: 'pf.noIncreasePortion', device: state.name },
