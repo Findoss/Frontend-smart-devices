@@ -188,7 +188,6 @@ export default new Vuex.Store({
           };
 
           socket.onerror = () => {
-            commit('DEL_DEVICE', device.id);
             commit('ADD_ALERT', {
               type: 'error',
               message: 'error.connect',
@@ -196,15 +195,16 @@ export default new Vuex.Store({
             });
           };
 
-          // socket.onclose = () => {
-          //   commit('SET_LOAD_DEVICE', false);
-          //   commit('ADD_ALERT', {
-          //     type: 'warning',
-          //     message: 'error.close',
-          //     device: device.title,
-          //   });
-          //   dispatch('disconnectDevice', device.id);
-          // };
+          socket.onclose = () => {
+            commit('SET_LOAD_DEVICE', false);
+            commit('DEL_DEVICE', device.id);
+            commit('ADD_ALERT', {
+              type: 'warning',
+              message: 'error.close',
+              device: device.title,
+            });
+            dispatch('disconnectDevice', device.id);
+          };
         });
 
         if (state.devices.length) {
